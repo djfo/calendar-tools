@@ -8,7 +8,7 @@ extension Event {
             title: ekEvent.title,
             startDate: ekEvent.startDate,
             endDate: ekEvent.endDate,
-            timeZone: ekEvent.timeZone,
+            timeZone: ekEvent.timeZone.flatMap { tz in _TimeZone(timeZone: tz) },
             location: title.flatMap { t in
                 Location(
                     title: t,
@@ -18,5 +18,11 @@ extension Event {
                 )
             }
         )
+    }
+}
+
+extension _TimeZone {
+    init(timeZone: TimeZone) {
+        self.identifier = timeZone.identifier
     }
 }

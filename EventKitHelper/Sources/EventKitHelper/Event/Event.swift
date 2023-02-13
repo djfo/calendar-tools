@@ -5,8 +5,12 @@ struct Event: Encodable {
     var title: String
     var startDate: Date
     var endDate: Date
-    var timeZone: TimeZone?
+    var timeZone: _TimeZone?
     var location: Location?
+}
+
+struct _TimeZone: Encodable {
+    var identifier: String
 }
 
 struct Location: Encodable {

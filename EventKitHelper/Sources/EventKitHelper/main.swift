@@ -23,7 +23,7 @@ do {
         input = try decodeInput()
     }
 
-    let helper = EventKitHelper()
+    let helper = EventKitHelper(outputMode: .json)
     helper.run(predicate: input.predicate)
 
     autoreleasepool {

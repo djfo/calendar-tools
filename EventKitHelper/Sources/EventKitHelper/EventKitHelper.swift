@@ -1,13 +1,19 @@
 import EventKit
 import Foundation
 
+enum OutputMode {
+    case json
+}
+
 class EventKitHelper {
     private let store = EKEventStore()
-    private let jsonEncoder: JSONEncoder
+    private let output: Output
 
-    init() {
-        self.jsonEncoder = JSONEncoder()
-        self.jsonEncoder.dateEncodingStrategy = .iso8601
+    init(outputMode: OutputMode) {
+        switch outputMode {
+            case .json:
+                self.output = JSONOutput()
+        }
     }
 
     func run(predicate: Predicate) {
@@ -34,9 +40,7 @@ class EventKitHelper {
         do {
             for ekEvent in events {
                 let event = Event(ekEvent: ekEvent)
-                let data = try jsonEncoder.encode(event)
-                try FileHandle.standardOutput.write(contentsOf: data)
-                try FileHandle.standardOutput.write(contentsOf: "\n".data(using: .ascii)!)
+                try self.output.output(event: event)
             }
         } catch {
             print("Failed to output JSON.")

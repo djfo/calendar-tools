@@ -8,7 +8,7 @@ do {
     let arguments = CommandLine.arguments
 
     let input: Input
-    if arguments.count == 3 {
+    if arguments.count >= 3 {
         let rawStartDate = arguments[1]
         let rawEndDate = arguments[2]
         let formatter = ISO8601DateFormatter()
@@ -23,7 +23,14 @@ do {
         input = try decodeInput()
     }
 
-    let helper = EventKitHelper(outputMode: .json)
+    let outputMode: OutputMode
+    if arguments.contains("--tsv") {
+        outputMode = .tsv
+    } else {
+        outputMode = .json
+    }
+
+    let helper = EventKitHelper(outputMode: outputMode)
     helper.run(predicate: input.predicate)
 
     autoreleasepool {

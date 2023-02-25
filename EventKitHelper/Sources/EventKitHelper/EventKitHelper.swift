@@ -3,6 +3,7 @@ import Foundation
 
 enum OutputMode {
     case json
+    case tsv
 }
 
 class EventKitHelper {
@@ -13,6 +14,8 @@ class EventKitHelper {
         switch outputMode {
             case .json:
                 self.output = JSONOutput()
+            case .tsv:
+                self.output = TSVOutput()
         }
     }
 

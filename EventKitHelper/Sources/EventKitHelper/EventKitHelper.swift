@@ -23,9 +23,10 @@ class EventKitHelper {
         store.requestAccess(to: .event) { [weak self] (accessGranted, error) in
             if !accessGranted {
                 if let error = error {
-                    print(error.localizedDescription)
+                    die(error: error)
+                } else {
+                    die(message: "Access to calendar not granted.")
                 }
-                exit(1)
             }
             self?._run(predicate: predicate)
         }
@@ -46,8 +47,7 @@ class EventKitHelper {
                 try self.output.output(event: event)
             }
         } catch {
-            print("Failed to output JSON.")
-            exit(1)
+            die(message: "Failed to output JSON.")
         }
 
         exit(0)

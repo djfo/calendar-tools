@@ -37,8 +37,7 @@ do {
         RunLoop.main.run()
     }
 } catch {
-    print("Failed to parse input.")
-    exit(1)
+    die(message: "Failed to parse input.")
 }
 
 func decodeInput() throws -> Input {

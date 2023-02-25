@@ -1,7 +1,7 @@
 import EventKit
 import Foundation
 
-enum OutputMode {
+enum OutputFormat {
     case json
     case tsv
 }
@@ -10,8 +10,8 @@ class EventKitHelper {
     private let store = EKEventStore()
     private let output: Output
 
-    init(outputMode: OutputMode) {
-        switch outputMode {
+    init(outputFormat: OutputFormat) {
+        switch outputFormat {
             case .json:
                 self.output = JSONOutput()
             case .tsv:

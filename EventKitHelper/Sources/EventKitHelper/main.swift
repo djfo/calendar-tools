@@ -23,14 +23,14 @@ do {
         input = try decodeInput()
     }
 
-    let outputMode: OutputMode
+    let outputFormat: OutputFormat
     if arguments.contains("--tsv") {
-        outputMode = .tsv
+        outputFormat = .tsv
     } else {
-        outputMode = .json
+        outputFormat = .json
     }
 
-    let helper = EventKitHelper(outputMode: outputMode)
+    let helper = EventKitHelper(outputFormat: outputFormat)
     helper.run(predicate: input.predicate)
 
     autoreleasepool {

@@ -14,5 +14,5 @@ do {
         RunLoop.main.run()
     }
 } catch {
-    die(message: "Failed to parse input.")
+    die(message: "Failed to decode input.")
 }

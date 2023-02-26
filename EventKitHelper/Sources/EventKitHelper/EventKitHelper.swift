@@ -1,11 +1,6 @@
 import EventKit
 import Foundation
 
-enum OutputFormat {
-    case json
-    case tsv
-}
-
 class EventKitHelper {
     private let store = EKEventStore()
     private let output: Output
@@ -53,4 +48,3 @@ class EventKitHelper {
         exit(0)
     }
 }
-

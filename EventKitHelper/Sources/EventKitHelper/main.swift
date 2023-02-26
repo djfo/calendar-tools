@@ -20,6 +20,9 @@ do {
         }
         input = Input(predicate: Predicate(startDate: startDate, endDate: endDate))
     } else {
+        let message = "Reading from standard input.\n"
+        let data = Data(message.utf8)
+        FileHandle.standardError.write(data)
         input = try decodeInput()
     }
 

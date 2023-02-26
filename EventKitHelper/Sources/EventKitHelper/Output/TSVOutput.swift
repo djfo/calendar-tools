@@ -26,8 +26,8 @@ class TSVOutput: Output {
         }
 
         for value in record {
-            if value.contains("\t") {
-                let message = "Fields in TSV output cannot contain tabs. Use JSON output format instead."
+            if value.range(of: "(\t\n\r)", options: .regularExpression) != nil {
+                let message = "Fields in TSV output cannot contain tabs, newlines, or carriage returns. Use JSON output format instead."
                 throw OutputError.generic(message: message)
             }
         }

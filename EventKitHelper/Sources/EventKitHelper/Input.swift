@@ -1,5 +1,10 @@
 import Foundation
 
+enum InputError: Error {
+    case invalidArguments
+    case invalidOutputFormat(raw: String)
+}
+
 struct Input: Decodable {
     var predicate: Predicate
     var outputFormat: OutputFormat
@@ -13,16 +18,29 @@ struct Predicate: Decodable {
 enum OutputFormat: Decodable {
     case json
     case tsv
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let raw = try container.decode(String.self)
+        switch raw.lowercased() {
+            case "json":
+                self = .json
+            case "tsv":
+                self = .tsv
+            default:
+                throw InputError.invalidOutputFormat(raw: raw)
+        }
+    }
 }
 
 func decodeInput() throws -> Input {
     let arguments = CommandLine.arguments
     return arguments.count >= 3
-        ? try decodeArgumentInput(arguments)
-        : try decodeStdinInput()
+        ? try decodeArguments(arguments)
+        : try decodeStandardInput()
 }
 
-func decodeArgumentInput(_ arguments: [String]) throws -> Input {
+func decodeArguments(_ arguments: [String]) throws -> Input {
     let message = "Reading from standard input.\n"
     let data = Data(message.utf8)
     FileHandle.standardError.write(data)
@@ -44,7 +62,7 @@ func decodeArgumentInput(_ arguments: [String]) throws -> Input {
     )
 }
 
-func decodeStdinInput() throws -> Input {
+func decodeStandardInput() throws -> Input {
     let decoder = JSONDecoder()
     decoder.dateDecodingStrategy = .iso8601
     let data = FileHandle.standardInput.availableData

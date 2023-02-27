@@ -28,23 +28,62 @@ class EventKitHelper {
     }
 
     func _run(predicate: Predicate) {
-        let predicate = store.predicateForEvents(
-            withStart: predicate.startDate,
-            end: predicate.endDate,
-            calendars: nil
+        /*
+         * The EventKit API restricts the maximum selectable time span to 4
+         * years. We lift that restriction by breaking the input time span into
+         * chunks and querying multiple times.
+         *
+         * https://developer.apple.com/documentation/eventkit/ekeventstore/1507479-predicateforevents#discussion
+         */
+        let timeSpans = self.timeSpans(
+            from: predicate.startDate,
+            to: predicate.endDate
         )
 
-        let events = store.events(matching: predicate)
-
         do {
-            for ekEvent in events {
-                let event = Event(ekEvent: ekEvent)
-                try self.output.output(event: event)
+            for (startDate, endDate) in timeSpans {
+                try self.process(from: startDate, to: endDate)
             }
         } catch {
             die(message: "Failed to output JSON.")
         }
 
         exit(0)
+    }
+
+    func process(from startDate: Date, to endDate: Date) throws {
+        let predicate = store.predicateForEvents(
+            withStart: startDate,
+            end: endDate,
+            calendars: nil
+        )
+
+        let events = store.events(matching: predicate)
+
+        for ekEvent in events {
+            let event = Event(ekEvent: ekEvent)
+            try self.output.output(event: event)
+        }
+    }
+
+    func timeSpans(from startDate: Date, to endDate: Date) -> [(Date, Date)] {
+        var timeSpans: [(Date, Date)] = []
+        computeTimeSpans(startDate: startDate, endDate: endDate, acc: &timeSpans)
+        return timeSpans
+    }
+
+    private func computeTimeSpans(startDate: Date, endDate: Date, acc: inout [(Date, Date)]) {
+        let utc = TimeZone(identifier: "UTC")!
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = utc
+
+        let nextDate = calendar.date( byAdding: .year, value: 4, to: startDate)!
+
+        if nextDate < endDate {
+            acc.append((startDate, nextDate))
+            self.computeTimeSpans(startDate: nextDate, endDate: endDate, acc: &acc)
+        } else {
+            acc.append((startDate, endDate))
+        }
     }
 }

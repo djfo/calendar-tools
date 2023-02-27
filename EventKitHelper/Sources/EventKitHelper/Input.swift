@@ -41,9 +41,6 @@ func decodeInput() throws -> Input {
 }
 
 func decodeArguments(_ arguments: [String]) throws -> Input {
-    let message = "Reading from standard input.\n"
-    let data = Data(message.utf8)
-    FileHandle.standardError.write(data)
     if arguments.count < 3 {
         throw InputError.invalidArguments
     }
@@ -63,8 +60,12 @@ func decodeArguments(_ arguments: [String]) throws -> Input {
 }
 
 func decodeStandardInput() throws -> Input {
+    let message = "Reading from standard input.\n"
+    FileHandle.standardError.write(Data(message.utf8))
+
     let decoder = JSONDecoder()
     decoder.dateDecodingStrategy = .iso8601
+
     let data = FileHandle.standardInput.availableData
     return try decoder.decode(Input.self, from: data)
 }

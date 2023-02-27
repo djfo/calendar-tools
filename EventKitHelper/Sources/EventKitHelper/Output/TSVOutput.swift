@@ -32,6 +32,7 @@ class TSVOutput: Output {
             }
         }
 
-        print(record.joined(separator: "\t"))
+        let data = Data(record.joined(separator: "\t").appending("\n").utf8)
+        FileHandle.standardOutput.write(data)
     }
 }

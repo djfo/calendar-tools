@@ -3,6 +3,7 @@ import Foundation
 enum InputError: Error {
     case invalidArguments
     case invalidOutputFormat(raw: String)
+    case invalidDateInterval
 }
 
 struct Input: Decodable {
@@ -35,9 +36,13 @@ enum OutputFormat: Decodable {
 
 func decodeInput() throws -> Input {
     let arguments = CommandLine.arguments
-    return arguments.count >= 3
+    let input = arguments.count >= 3
         ? try decodeArguments(arguments)
         : try decodeStandardInput()
+    if input.predicate.startDate > input.predicate.endDate {
+        throw InputError.invalidDateInterval
+    }
+    return input
 }
 
 func decodeArguments(_ arguments: [String]) throws -> Input {

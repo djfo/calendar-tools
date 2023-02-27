@@ -35,7 +35,7 @@ class EventKitHelper {
          *
          * https://developer.apple.com/documentation/eventkit/ekeventstore/1507479-predicateforevents#discussion
          */
-        let timeSpans = self.timeSpans(
+        let timeSpans = timeSpans(
             from: predicate.startDate,
             to: predicate.endDate
         )
@@ -65,25 +65,25 @@ class EventKitHelper {
             try self.output.output(event: event)
         }
     }
+}
 
-    func timeSpans(from startDate: Date, to endDate: Date) -> [(Date, Date)] {
-        var timeSpans: [(Date, Date)] = []
-        computeTimeSpans(startDate: startDate, endDate: endDate, acc: &timeSpans)
-        return timeSpans
-    }
+func timeSpans(from startDate: Date, to endDate: Date) -> [(Date, Date)] {
+    var timeSpans: [(Date, Date)] = []
+    computeTimeSpans(startDate: startDate, endDate: endDate, acc: &timeSpans)
+    return timeSpans
+}
 
-    private func computeTimeSpans(startDate: Date, endDate: Date, acc: inout [(Date, Date)]) {
-        let utc = TimeZone(identifier: "UTC")!
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = utc
+fileprivate func computeTimeSpans(startDate: Date, endDate: Date, acc: inout [(Date, Date)]) {
+    let utc = TimeZone(identifier: "UTC")!
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = utc
 
-        let nextDate = calendar.date( byAdding: .year, value: 4, to: startDate)!
+    let nextDate = calendar.date(byAdding: .year, value: 4, to: startDate)!
 
-        if nextDate < endDate {
-            acc.append((startDate, nextDate))
-            self.computeTimeSpans(startDate: nextDate, endDate: endDate, acc: &acc)
-        } else {
-            acc.append((startDate, endDate))
-        }
+    if nextDate < endDate {
+        acc.append((startDate, nextDate))
+        computeTimeSpans(startDate: nextDate, endDate: endDate, acc: &acc)
+    } else {
+        acc.append((startDate, endDate))
     }
 }

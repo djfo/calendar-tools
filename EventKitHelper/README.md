@@ -8,6 +8,10 @@ Build the program using the Swift package manager
 
     % swift build
 
+Release/production build
+
+    % swift build -c release
+
 ## Invocation
 
 Output all events in 2022 as JSON (default)
